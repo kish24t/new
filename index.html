@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>꿈나래 모의카페</title>
+  <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Gowun Dodum', sans-serif;
+      background-color: #fff8f0;
+      text-align: center;
+      padding: 2em;
+    }
+    h1 {
+      font-size: 2.5em;
+      color: #333;
+    }
+    .menu-btn, .temp-btn, #submitBtn, #resetBtn {
+      font-size: 1.2em;
+      padding: 0.7em 1.5em;
+      margin: 0.5em;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .menu-btn:hover, .temp-btn:hover, #submitBtn:hover, #resetBtn:hover {
+      opacity: 0.85;
+    }
+    .americano { background-color: #cceaff; }
+    .latte { background-color: #d8f8c6; }
+    .vanilla { background-color: #fff4cc; }
+    .hot { background-color: #ffcdd2; }
+    .ice { background-color: #b3e5fc; }
+    #submitBtn, #resetBtn { background-color: #ffe0b2; }
+    .hidden { display: none; }
+    .mission-box {
+      border: 2px dashed #ccc;
+      padding: 1em;
+      margin: 1em auto;
+      max-width: 400px;
+      background-color: #fff;
+    }
+    .order-summary {
+      font-size: 1.2em;
+      margin: 1em 0;
+    }
+    input[type="text"] {
+      padding: 0.5em;
+      font-size: 1.1em;
+      width: 70%;
+      margin-top: 0.5em;
+    }
+  </style>
+</head>
+<body>
+  <h1>☕ 꿈나래 모의카페<br><span style="font-size: 0.6em; color: #666;">Kkumnarae Mock Café</span></h1>
+
+  <div id="menuSection">
+    <h2>메뉴를 선택하세요<br><span style="font-size: 0.5em;">Choose a drink</span></h2>
+    <button class="menu-btn americano" onclick="selectMenu('아메리카노', 'Americano')">아메리카노</button>
+    <button class="menu-btn latte" onclick="selectMenu('카페라떼', 'Cafe Latte')">카페라떼</button>
+    <button class="menu-btn vanilla" onclick="selectMenu('바닐라라떼', 'Vanilla Latte')">바닐라라떼</button>
+  </div>
+
+  <div id="tempSection" class="hidden">
+    <h2>온도를 선택하세요<br><span style="font-size: 0.5em;">Choose temperature</span></h2>
+    <button class="temp-btn hot" onclick="selectTemp('핫', 'Hot')">HOT</button>
+    <button class="temp-btn ice" onclick="selectTemp('아이스', 'Iced')">ICE</button>
+  </div>
+
+  <div id="confirmSection" class="hidden">
+    <div class="order-summary" id="orderSummary"></div>
+    <div class="mission-box">
+      <p><strong>미션 1:</strong> 앞에 있는 친구와 하이파이브!<br><span style="font-size: 0.8em; color: #666;">High-five with a friend!</span></p>
+      <p><strong>미션 2:</strong> 주문서에 성함을 알려주세요.<br><span style="font-size: 0.8em; color: #666;">Tell us your name on the form.</span></p>
+      <input type="text" id="nameInput" placeholder="이름 / Your name" />
+    </div>
+    <button id="submitBtn" onclick="submitOrder()">제출 / Submit</button>
+    <button id="resetBtn" onclick="resetOrder()">처음으로 / Reset</button>
+  </div>
+
+  <script>
+    let selectedMenu = "";
+    let selectedMenuEn = "";
+    let selectedTemp = "";
+    let selectedTempEn = "";
+
+    function selectMenu(menuKr, menuEn) {
+      selectedMenu = menuKr;
+      selectedMenuEn = menuEn;
+      document.getElementById("menuSection").classList.add("hidden");
+      document.getElementById("tempSection").classList.remove("hidden");
+    }
+
+    function selectTemp(tempKr, tempEn) {
+      selectedTemp = tempKr;
+      selectedTempEn = tempEn;
+      document.getElementById("tempSection").classList.add("hidden");
+      document.getElementById("confirmSection").classList.remove("hidden");
+      document.getElementById("orderSummary").innerText =
+        `주문하신 메뉴는 ${selectedMenu} (${selectedTemp}) 입니다.\nYour order: ${selectedMenuEn} (${selectedTempEn})`;
+    }
+
+    function submitOrder() {
+      const name = document.getElementById("nameInput").value;
+      if (!name) {
+        alert("이름을 입력해주세요 / Please enter your name");
+        return;
+      }
+
+      fetch("https://script.google.com/macros/s/AKfycbwWQ_fQMDWyh6oYPN7-RsRKBgLKglGZXDB2_E_dZUAGndfNYalr3D5Z8MfJj3450WTa/exec", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: name,
+          order: `${selectedMenu} (${selectedTemp})`
+        })
+      })
+      .then(response => response.text())
+      .then(data => {
+        alert("제출되었습니다! / Order submitted!");
+        resetOrder();
+      })
+      .catch(error => alert("제출 실패 😥 / Submission failed."));
+    }
+
+    function resetOrder() {
+      selectedMenu = "";
+      selectedTemp = "";
+      document.getElementById("nameInput").value = "";
+      document.getElementById("confirmSection").classList.add("hidden");
+      document.getElementById("menuSection").classList.remove("hidden");
+    }
+  </script>
+</body>
+</html>
